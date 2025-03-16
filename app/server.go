@@ -87,7 +87,9 @@ func handleClient(conn net.Conn) {
 		cmdParser := NewParser(buf[:n])
 		cmd, err := cmdParser.Parse()
 		if err != nil {
-			log.Fatalln(err)
+			log.Println("Command error:", err)
+			conn.Write([]byte(fmt.Sprintf("-ERR unknown command '%s'\r\n", err.Error())))
+			continue
 		}
 		_, err = cmd.Execute(conn)
 		if err != nil {
@@ -95,3 +97,4 @@ func handleClient(conn net.Conn) {
 		}
 	}
 }
+
