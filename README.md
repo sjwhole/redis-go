@@ -1,35 +1,95 @@
-[![progress-banner](https://backend.codecrafters.io/progress/redis/d7ee49f7-bb2c-43f2-a06c-eb38f5a2f855)](https://app.codecrafters.io/users/codecrafters-bot?r=2qF)
+# Go Redis Server Implementation
 
-This is a starting point for Go solutions to the
-["Build Your Own Redis" Challenge](https://codecrafters.io/challenges/redis).
+A lightweight Redis server implementation in Go that supports basic Redis commands and persistence via RDB files.
 
-In this challenge, you'll build a toy Redis clone that's capable of handling
-basic commands like `PING`, `SET` and `GET`. Along the way we'll learn about
-event loops, the Redis protocol and more.
+## Table of Contents
 
-**Note**: If you're viewing this repo on GitHub, head over to
-[codecrafters.io](https://codecrafters.io) to try the challenge.
+* [Features](#features)
+* [Components Overview](#components-overview)
+* [Getting Started](#getting-started)
+* [Usage Examples](#usage-examples)
+* [References](#references)
 
-# Passing the first stage
+## Features
 
-The entry point for your Redis implementation is in `app/server.go`. Study and
-uncomment the relevant code, and push your changes to pass the first stage:
+* Implementation of core Redis commands (PING, ECHO, SET, GET, CONFIG GET, KEYS, INFO)
+* Key-value storage with expiration support
+* RDB file format persistence
+* Command parsing based on the Redis protocol
+* Support for master-slave replication configuration
 
-```sh
-git add .
-git commit -m "pass 1st stage" # any msg
-git push origin master
+## Components Overview
+
+1. Parser
+    * **Algorithm**: Redis Protocol (RESP) parser
+    * Converts client messages into executable commands
+    * Handles command arguments and parsing
+    * Supports different command formats and arguments
+
+2. Command System
+    * Command interface for uniform execution
+    * Individual command implementations (PingCommand, EchoCommand, etc.)
+    * Error handling and response formatting according to RESP
+
+3. Storage
+    * In-memory key-value database implementation
+    * Support for key expiration (both milliseconds and seconds)
+    * Concurrent access handling with timers for expiry
+
+4. Persistence
+    * **Algorithm**: RDB file format parsing
+    * Reading and parsing RDB dump files
+    * Support for different value types and expiry formats
+    * Binary data handling for compact storage
+
+## Getting Started
+
+### Prerequisites
+
+* Go 1.16+
+
+### Installation
+
+```
+git clone https://github.com/sjwhole/redis-go.git
+cd redis-go
 ```
 
-That's all!
+## Usage Examples
 
-# Stage 2 & beyond
+### Starting the Redis Server
 
-Note: This section is for stages 2 and beyond.
+```
+chmod +x go-redis-server.sh
+./spawn-redis-server.sh
+```
 
-1. Ensure you have `go (1.19)` installed locally
-1. Run `./spawn_redis_server.sh` to run your Redis server, which is implemented
-   in `app/server.go`.
-1. Commit your changes and run `git push origin master` to submit your solution
-   to CodeCrafters. Test output will be streamed to your terminal.
+### With RDB File Loading
 
+```
+./spawn-redis-server.sh --dbfilename dump.rdb
+```
+
+### Connecting with Redis CLI
+
+```
+redis-cli -p 6379
+> PING
+PONG
+> SET mykey "Hello World"
+OK
+> GET mykey
+"Hello World"
+> SET key-with-expiry "I will expire" PX 5000
+OK
+> KEYS *
+1) "mykey"
+2) "key-with-expiry"
+```
+
+## References
+
+* [Code Crafters - Build Your Own Redis](https://codecrafters.io/redis)
+* [Redis Protocol Specification](https://redis.io/topics/protocol)
+* [Redis Command Reference](https://redis.io/commands)
+* [Redis RDB File Format](https://github.com/sripathikrishnan/redis-rdb-tools/wiki/Redis-RDB-Dump-File-Format)
