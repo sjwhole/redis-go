@@ -60,14 +60,13 @@ cd redis-go
 ### Starting the Redis Server
 
 ```
-chmod +x go-redis-server.sh
-./spawn-redis-server.sh
+./spawn_redis_server.sh
 ```
 
 ### With RDB File Loading
 
 ```
-./spawn-redis-server.sh --dbfilename dump.rdb
+./spawn_redis_server.sh --dbfilename dump.rdb
 ```
 
 ### Connecting with Redis CLI
